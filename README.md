@@ -36,6 +36,7 @@ tool.RXCUI_to_SMILES['312055']
 tool.NDC_to_Name['76413-153-06']
 ...
 ```
+- check ```test/Example.ipynb``` for examples.
 - **Implementation Features --- Minimal Computation.** The tool will require minimum computation cost for generating all necessary combinations within the listed coding systems, and other mapping functions will not be generated. For example, in this demo, ```NDC_to_RxNorm``` will not be accessible since ```RxNorm``` is not listed in the user input. Our minimal cost computation relies on that we maintain a graph structure of the listed coding systems and use shortest path method to find the missing mapping.
 
 

@@ -1,0 +1,3 @@
+[console_scripts]
+MedCode = MedCode:MedCode
+

@@ -16,7 +16,13 @@ For any given combination of coding systems, we will provide the mapping functio
     - ```NDC_to_RXCUI```, ```NDC_to_ATC4```, ```RXCUI_to_NDC```, ```RXCUI_to_ATC4```, ```ATC4_to_NDC```, ```ATC4_to_RXCUI```
 ---
 ## 1. Package Installation
+
 ```bash
+# get from PyPI
+$ pip install MedCode
+```
+```bash
+# local installation
 $ cd ~/MedCode
 $ pip3 install dist/MedCode-0.1-py3-none-any.whl
 ```

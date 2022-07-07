@@ -24,13 +24,14 @@ $ pip install MedCode
 ```bash
 # local installation
 $ cd ~/MedCode
-$ pip3 install dist/MedCode-0.1-py3-none-any.whl
+$ pip3 install dist/MedCode-[VERSION-ID]-py3-none-any.whl
 ```
 To look up for help, directly type "MedCode" in the cmd and the help message will pop up.
 ```bash
 $ MedCode
 ```
 ## 2. Quick Usage
+### Load all mappings during initialization
 ```python
 from MedCode import CodeMapping
 # initialize with a list of supported coding systems
@@ -41,6 +42,14 @@ tool.load_mapping()
 tool.RXCUI_to_SMILES['312055']
 tool.NDC_to_Name['76413-153-06']
 ...
+```
+### Want to add more coding systems later?
+```python
+# add additional coding system
+tool.add_code("RxNorm")
+
+# we are good to go, e.g.,
+tool.NDC_to_RxNorm['76413-153-06']
 ```
 - check ```test/Example.ipynb``` for examples.
 - **Implementation Features --- Minimal Computation.** The tool will require minimum computation cost for generating all necessary combinations within the listed coding systems, and other mapping functions will not be generated. For example, in this demo, ```NDC_to_RxNorm``` will not be accessible since ```RxNorm``` is not listed in the user input. Our minimal cost computation relies on that we maintain a graph structure of the listed coding systems and use shortest path method to find the missing mapping.

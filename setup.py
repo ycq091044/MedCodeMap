@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="MedCode",
-    version="0.1",
+    version="0.1.1",
     author="Chaoqi Yang",
     author_email="chaoqiy2@illinois.edu",
     description="A package for medical code mapping",

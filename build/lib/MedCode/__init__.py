@@ -5,6 +5,8 @@ import time
 from urllib import request
 import sys
 
+__version__ = "0.1.1"
+
 # README
 README = """
 ---------------------------- Help ---------------------------
@@ -154,3 +156,26 @@ class CodeMapping:
                     temp += Dict2[m_item]
             if len(temp) > 1:
                 exec("self.{}_to_{}[k] = list(set(temp))".format(key, value))
+            
+
+    def add_code(self, new_code):
+        code_pairs = [(new_code, code) for code in self.Codes if code != new_code]
+        for code1, code2 in code_pairs:
+            if code2 == code1: continue
+            if code1 != 'SMILES':
+                if not hasattr(self, "{}_to_{}".format(code1, code2)):
+                    if hasattr(self, "{}_to_{}".format(code2, code1)):
+                        exec("self.{0}_to_{1} = self.mapping_reverse_dict(self.{1}_to_{0})".format(code1, code2))
+                    else:
+                        shortest_path = nx.shortest_path(self.G, source=code1, target=code2)
+                        key = shortest_path[0]
+                        for i in range(len(shortest_path) - 2):
+                            mid, value = shortest_path[i+1: i+3]
+                            self.map_combine(key, mid, value)
+                            self.G.add_edge(key, value)
+                print ("mapping finished: {} -> {}".format(code1, code2))
+            
+            if code2 != 'SMILES':
+                if not hasattr(self, "{}_to_{}".format(code2, code1)) and (code2 != 'SMILES'):
+                    exec("self.{0}_to_{1} = self.mapping_reverse_dict(self.{1}_to_{0})".format(code2, code1))
+                print ("mapping finished: {} -> {}".format(code2, code1))

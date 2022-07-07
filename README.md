@@ -36,7 +36,7 @@ $ MedCode
 from MedCode import CodeMapping
 # initialize with a list of supported coding systems
 tool = CodeMapping('NDC', 'RXCUI', 'Name', 'SMILES')
-tool.load_mapping()
+tool.load()
 
 # we are good to go, e.g.,
 tool.RXCUI_to_SMILES['312055']
@@ -46,7 +46,7 @@ tool.NDC_to_Name['76413-153-06']
 ### Want to add more coding systems later?
 ```python
 # add additional coding system
-tool.add_code("RxNorm")
+tool.add_new_code("RxNorm")
 
 # we are good to go, e.g.,
 tool.NDC_to_RxNorm['76413-153-06']

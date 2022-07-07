@@ -5,7 +5,7 @@ import time
 from urllib import request
 import sys
 
-__version__ = "0.1.1"
+__version__ = "1.1"
 
 # README
 README = """
@@ -33,8 +33,11 @@ OUTPUT:
 EXAMPLE:
     >> from MedCode import CodeMapping
     >> tool = CodeMapping('NDC', 'RXCUI', 'Name', 'SMILES')
-    >> tool.load_mapping()
+    >> tool.load()
     >> tool.RXCUI_to_SMILES['312055']
+
+    >> tool.add_new_code('RxNorm')
+    >> tool.RXCUI_to_RxNorm['312055']
 """
 
 def MedCode():
@@ -42,11 +45,11 @@ def MedCode():
     
 class CodeMapping:
     def __init__(self, *Codes):
-        self.Codes = Codes
+        self.Codes = list(Codes)
         # codes Graph
         self.G = nx.Graph()
         
-    def load_mapping(self):
+    def load(self):
         tic = time.time()
         print ("----- preparing code mappings -----")
         # NDC, RXCUI, ATC4
@@ -115,23 +118,34 @@ class CodeMapping:
     
     def fully_connected_codes(self):
         for code1, code2 in combinations(self.Codes, 2):
-            if code1 != 'SMILES':
-                if not hasattr(self, "{}_to_{}".format(code1, code2)):
-                    if hasattr(self, "{}_to_{}".format(code2, code1)):
-                        exec("self.{0}_to_{1} = self.mapping_reverse_dict(self.{1}_to_{0})".format(code1, code2))
-                    else:
-                        shortest_path = nx.shortest_path(self.G, source=code1, target=code2)
-                        key = shortest_path[0]
-                        for i in range(len(shortest_path) - 2):
-                            mid, value = shortest_path[i+1: i+3]
-                            self.map_combine(key, mid, value)
-                            self.G.add_edge(key, value)
-                print ("mapping finished: {} -> {}".format(code1, code2))
-            
-            if code2 != 'SMILES':
-                if not hasattr(self, "{}_to_{}".format(code2, code1)) and (code2 != 'SMILES'):
+            self.add_mapping(code1, code2)
+
+    def add_mapping(self, code1, code2):
+        if code1 != 'SMILES':
+            if not hasattr(self, "{}_to_{}".format(code1, code2)):
+                if hasattr(self, "{}_to_{}".format(code2, code1)):
+                    exec("self.{0}_to_{1} = self.mapping_reverse_dict(self.{1}_to_{0})".format(code1, code2))
+                else:
+                    shortest_path = nx.shortest_path(self.G, source=code1, target=code2)
+                    key = shortest_path[0]
+                    for i in range(len(shortest_path) - 2):
+                        mid, value = shortest_path[i+1: i+3]
+                        self.map_combine(key, mid, value)
+                        self.G.add_edge(key, value)
+            print ("mapping finished: {} -> {}".format(code1, code2))
+        
+        if code2 != 'SMILES':
+            if not hasattr(self, "{}_to_{}".format(code2, code1)):
+                if hasattr(self, "{}_to_{}".format(code1, code2)):
                     exec("self.{0}_to_{1} = self.mapping_reverse_dict(self.{1}_to_{0})".format(code2, code1))
-                print ("mapping finished: {} -> {}".format(code2, code1))
+                else:
+                    shortest_path = nx.shortest_path(self.G, source=code2, target=code1)
+                    key = shortest_path[0]
+                    for i in range(len(shortest_path) - 2):
+                        mid, value = shortest_path[i+1: i+3]
+                        self.map_combine(key, mid, value)
+                        self.G.add_edge(key, value)
+            print ("mapping finished: {} -> {}".format(code2, code1))
                 
                     
     def map_combine(self, key, mid, value):
@@ -157,25 +171,9 @@ class CodeMapping:
             if len(temp) > 1:
                 exec("self.{}_to_{}[k] = list(set(temp))".format(key, value))
             
-
-    def add_code(self, new_code):
+    def add_new_code(self, new_code):
         code_pairs = [(new_code, code) for code in self.Codes if code != new_code]
         for code1, code2 in code_pairs:
             if code2 == code1: continue
-            if code1 != 'SMILES':
-                if not hasattr(self, "{}_to_{}".format(code1, code2)):
-                    if hasattr(self, "{}_to_{}".format(code2, code1)):
-                        exec("self.{0}_to_{1} = self.mapping_reverse_dict(self.{1}_to_{0})".format(code1, code2))
-                    else:
-                        shortest_path = nx.shortest_path(self.G, source=code1, target=code2)
-                        key = shortest_path[0]
-                        for i in range(len(shortest_path) - 2):
-                            mid, value = shortest_path[i+1: i+3]
-                            self.map_combine(key, mid, value)
-                            self.G.add_edge(key, value)
-                print ("mapping finished: {} -> {}".format(code1, code2))
-            
-            if code2 != 'SMILES':
-                if not hasattr(self, "{}_to_{}".format(code2, code1)) and (code2 != 'SMILES'):
-                    exec("self.{0}_to_{1} = self.mapping_reverse_dict(self.{1}_to_{0})".format(code2, code1))
-                print ("mapping finished: {} -> {}".format(code2, code1))
+            self.add_mapping(code1, code2)
+        self.Codes.append(new_code)

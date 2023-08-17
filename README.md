@@ -1,4 +1,6 @@
-# MedCode: Medication Code Mapping Tool
+# MedCodeMap: Medication Code Mapping Tool
+
+> ### We have renamed the package into "MedCodeMap".
 
 There are many medication/drug taxonomy systems, such as RXCUI, NDC, ATC. I feel it time-consuming and very confusing to map codes between two different systems during working on this **drug recommendation project** https://github.com/ycq091044/SafeDrug. Sometimes, the code mapping resources cannot be accessible as well. To help others onboarding, here we go!
 
@@ -19,21 +21,21 @@ For any given combination of coding systems, we will provide the mapping functio
 
 ```bash
 # get from PyPI
-$ pip install MedCode
+$ pip install MedCodeMap
 ```
 ```bash
 # local installation
-$ cd ~/MedCode
-$ pip3 install dist/MedCode-[VERSION-ID]-py3-none-any.whl
+$ cd ~/MedCodeMap
+$ pip3 install dist/MedCodeMap-[VERSION-ID]-py3-none-any.whl
 ```
-To look up for help, directly type "MedCode" in the cmd and the help message will pop up.
+To look up for help, directly type "MedCodeMap" in the cmd and the help message will pop up.
 ```bash
-$ MedCode
+$ MedCodeMap
 ```
 ## 2. Quick Usage
 ### Load all mappings during initialization
 ```python
-from MedCode import CodeMapping
+from MedCodeMap import CodeMapping
 # initialize with a list of supported coding systems
 tool = CodeMapping('NDC10', 'RXCUI', 'Name', 'SMILES')
 tool.load()

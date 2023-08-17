@@ -14,7 +14,7 @@ README = """
 ---------------------------- Help ---------------------------
 Chaoqi Yang @ UIUC, chaoqiy2@illinois.edu
 -------------------------------------------------------------
-MedCode is a python package for supporting medical code mapping,
+MedCodeMap is a python package for supporting medical code mapping,
 including:
 - NDC10: the National Drug Codes system, 10-digit version
 - NDC11: the National Drug Codes system, 11-digit version
@@ -33,7 +33,7 @@ OUTPUT:
         - we do not support tool.SMILES_to_[code], since it is meaningless
 
 EXAMPLE:
-    >> from MedCode import CodeMapping
+    >> from MedCodeMap import CodeMapping
     >> tool = CodeMapping('NDC10', 'RXCUI', 'Name', 'SMILES')
     >> tool.load()
     >> tool.RXCUI_to_SMILES['312055']
@@ -43,7 +43,7 @@ EXAMPLE:
 """
 
 
-def MedCode():
+def MedCodeMap():
     print(README)
 
 
@@ -87,7 +87,8 @@ class CodeMapping:
         else:
             name2SMILES = pd.read_csv(f"{self.path}/name2SMILES.csv")
             print(f"source loaded from {self.path} cache")
-        self.Name_to_SMILES = self.mapping_from_pd(name2SMILES, "name", "moldb_smiles")
+        self.Name_to_SMILES = self.mapping_from_pd(
+            name2SMILES, "name", "moldb_smiles")
         self.G.add_edge("Name", "SMILES")
 
     def load_NDC112Name(self):
@@ -116,7 +117,8 @@ class CodeMapping:
                 ),
                 dtype={"NDC10": str, "RXCUI": str, "ATC4": str},
             )
-            NDC102RXCUI2atc4.to_csv(f"{self.path}/NDC102RXCUI2atc4.csv", index=False)
+            NDC102RXCUI2atc4.to_csv(
+                f"{self.path}/NDC102RXCUI2atc4.csv", index=False)
             # print ('source loaded from https://drive.google.com/uc?id=1I2G6fsBDXDiAK95qFWwtnl3Ib2MaLeCx')
         else:
             NDC102RXCUI2atc4 = pd.read_csv(
@@ -190,7 +192,7 @@ class CodeMapping:
                     for path in nx.all_simple_paths(self.G, source=code1, target=code2):
                         key = path[0]
                         for i in range(len(path) - 2):
-                            mid, value = path[i + 1 : i + 3]
+                            mid, value = path[i + 1: i + 3]
                             self.map_combine(key, mid, value)
                     self.G.add_edge(key, value)
             print("mapping finished: {} -> {}".format(code1, code2))
@@ -232,7 +234,8 @@ class CodeMapping:
             exec("self.{0}_to_{1} = {0}_to_{1}".format(key, value))
 
     def add_new_code(self, new_code):
-        code_pairs = [(new_code, code) for code in self.Codes if code != new_code]
+        code_pairs = [(new_code, code)
+                      for code in self.Codes if code != new_code]
         for code1, code2 in code_pairs:
             if code2 == code1:
                 continue
